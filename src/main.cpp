@@ -28,7 +28,7 @@ public:
         std::string method = request.method;
         std::string uri = request.target;
         std::string httpVersion = request.version;
-        LOG_INFO("Request Information: %s %s %s ----> %s:%d", httpVersion.c_str(), method.c_str(), uri.c_str(), clientIP.c_str(), clientPort);
+        LOG_INFO("Request Info: %s:%d\t| %s %s %s", clientIP.c_str(), clientPort, httpVersion.c_str(), method.c_str(), uri.c_str());
     }
 
 public:
@@ -48,6 +48,7 @@ public:
         }
     }
 
+#undef SET_CONFIG_STR
 #define SET_CONFIG_STR(cate, type, data)        \
     ManagerConfig->setConfig(cate, type, data); \
     LOG_INFO("Init %s\t>> %s\t: %s", cate, type, data.c_str());
@@ -65,6 +66,7 @@ public:
         goto InitConfig;                                                      \
     }
 
+#undef GET_CONFIG_INT
 #define GET_CONFIG_INT(cate, type, data)                                      \
     std::string readData##data = ManagerConfig->getConfig(cate, type);        \
     if (readData##data != "")                                                 \
@@ -101,22 +103,48 @@ public:
         }
         LOG_INFO("Done <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n");
     }
+
+#undef GET_CONFIG_INT
+#undef SET_CONFIG_STR
+
     // 处理http请求
     void httpHandle()
     {
         // 静态文件根目录
         ManagerHttpServer.set_base_dir(_ServerResPath);
 
-        ManagerHttpServer.Get("/", [&](const httplib::Request &request, httplib::Response &res)
-                              { ShowRequestIofo(request); });
+        // request 处理后调用
+        ManagerHttpServer.set_logger([&](const httplib::Request &request, const httplib::Response &res)
+                                     {
+                                         // ShowRequestIofo(request);
+                                     });
 
+        // 收到请求后的预处理
+        ManagerHttpServer.set_pre_routing_handler([&](const auto &req, auto &res)
+                                                  {
+            ShowRequestIofo(req);
+
+            if (req.path == "/hello") {
+                res.set_content("world", "text/html");
+                return httplib::Server::HandlerResponse::Handled;
+            }
+            return httplib::Server::HandlerResponse::Unhandled; });
+
+        // Test Handle
         ManagerHttpServer.Get("/hi", [&](const httplib::Request &request, httplib::Response &res)
-                              { 
-                                ShowRequestIofo(request);
-                                res.set_content("Hello World!", "text/plain"); });
+                              { res.set_content("Hello World!", "text/plain"); });
+        // Stop Request
         ManagerHttpServer.Get("/stop",
-                              [&](const httplib::Request & /*req*/, httplib::Response & /*res*/)
-                              { ManagerHttpServer.stop(); });
+                              [&](const httplib::Request & /*req*/, httplib::Response &res)
+                              { res.set_content("See you Next time!", "text/plain");
+                                ManagerHttpServer.stop(); });
+
+        ManagerHttpServer.set_error_handler([](const auto &req, auto &res)
+                                            {
+            auto fmt = "<p>Error Status: <span style='color:red;'>%d</span></p>";
+            char buf[BUFSIZ];
+            snprintf(buf, sizeof(buf), fmt, res.status);
+            res.set_content(buf, "text/html"); });
     }
 
     void ServerStart()

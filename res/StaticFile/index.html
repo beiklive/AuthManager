@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <title>HomePage2022</title>
+  <link rel="stylesheet" href="./res/index.css">
+  <link rel="stylesheet" href="./res/right.css">
+  <link rel="stylesheet" href="./res/left.css">
+  <!-- Bootstrap -->
+  <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+  <div class="container-fluid">
+    <div id="board"></div>
+    <div class="row">
+      <div class="col-sm-6" id="leftbar">
+        <div class="left-bar-container">
+          <div id="light">
+            <div class="light-top">
+            </div>
+            <div class="light-bottom">
+            </div>
+
+          </div>
+          <div id="avatar">
+            <img src="./res/img/me.png" alt="">
+            <div class="rotate-itself"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6" id="rightbar">
+        <div class="right-bar-container">
+          <div class="box">
+            <div id="index-container">
+              <div class="label-item">
+                <div class="list-group" id="ChangeBox">
+                  <a class="myitem" href="http://www.beiklive.top" target="_blank">
+                    <p><i class="fa fa-home fa-fw"></i>&nbsp;Home</p>
+                  </a>
+                  <a class="myitem" href="http://wiki.beiklive.top" target="_blank">
+                    <p><i class="fa fa-book fa-fw"></i>&nbsp;Wiki</p>
+                  </a>
+                  <a class="myitem" href="#" onclick="ShowSettings()">
+                    <p><i class="fa fa-cog fa-fw"></i>&nbsp;Settings</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+<!-- 模态框（Modal） -->
+<div class="MySettingBox " id="MySettingBox" style=" visibility: hidden;">
+  <div class="input-group" >
+    <input id="KeyInput" type="text" class="form-control">
+    <span class="input-group-btn">
+        <button class="btn btn-primary" type="button" onclick="SendKey()">Go!</button>
+    </span>
+  </div>
+  
+</div>
+
+      <script src="./res/index.js"></script>
+</body>
+
+</html>

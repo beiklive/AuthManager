@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: rgb(2, 2, 2);
+}
+
+.right-bar-container {
+    height: calc(100vh);
+    vertical-align: middle;
+    overflow-y: hidden;
+    perspective: 800px;
+    background-color: transparent;
+    z-index: 5;
+
+}
+
+
+.box {
+    position: relative;
+    width: 500px;
+    height: 600px;
+    left: 100px;
+    margin-top: 80px;
+    transform-origin: right;
+    transform: rotateY(-30deg);
+    animation: box-animation1 1s;
+    -webkit-box-reflect: below 15px linear-gradient(rgb(0, 0, 0), rgba(0, 0, 0, .3));
+    z-index: 999;
+
+    /* box-reflect: below 5px linear-gradient(transparent 60%,rgba(0,0,0,.3)); */
+}
+
+@keyframes box-animation1 {
+    from {
+        transform: rotateY(0deg);
+
+    }
+
+    to {
+        transform: rotateY(-30deg);
+
+    }
+}
+
+
+#index-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* left: 400px;
+    margin-top: 100px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000000;
+    border-radius: 10px;
+
+}
+
+/* 用box的伪元素添加一个面积比box略大的矩形,并通过改变层叠次序,置于box的下层,达到给box设置边框的效果 */
+#index-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: #fff;
+    border-radius: 10px;
+    z-index: -1;
+}
+
+/* 于上面类似,做一个面积比box略大的矩形,并通过改变层叠次序,置于box的下层,达到给box设置边框的效果 */
+#index-container::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: #fff;
+    z-index: -2;
+    /* 滤镜属性  给图像设置高斯模糊。"radius"一值设定高斯函数的标准差，或者是屏幕上以多少像素融在一起，所以值越大越模糊；如果没有设定值，则默认是0；这个参数可设置css长度值，但不接受百分比值。 */
+    filter: blur(30px);
+}
+
+#index-container::before,
+#index-container::after {
+    /* linear-gradient() 函数用于创建一个线性渐变的 "图像"。 参数1:用角度值指定渐变的方向（或角度）  12点钟方向为0deg*/
+    background: linear-gradient(235deg, #e458cd, #060c21, #00bcd4);
+}
+
+
+
+.myitem {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    font-size: 40px;
+    text-decoration-line: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+
+.myitem p{
+    -webkit-transition: all 1.5s ease;
+    transition: all 1.5s ease;
+    -webkit-animation: Glow 1.5s ease infinite alternate;
+    animation: Glow 1.5s ease infinite alternate;
+}
+
+@-webkit-keyframes Glow {
+    from {
+        text-shadow: 0 0 10px rgb(127, 189, 227),
+            0 0 20px rgb(127, 189, 227),
+            0 0 30px rgb(127, 189, 227),
+            0 0 40px #00a67c,
+            0 0 70px #00a67c,
+            0 0 80px #00a67c,
+            0 0 100px #00a67c,
+            0 0 150px #00a67c;
+    }
+    to {
+        text-shadow: 0 0 5px rgb(127, 189, 227),
+            0 0 10px rgb(127, 189, 227),
+            0 0 15px rgb(127, 189, 227),
+            0 0 20px #00a67c,
+            0 0 35px #00a67c,
+            0 0 40px #00a67c,
+            0 0 50px #00a67c,
+            0 0 75px #00a67c;
+    }
+}
+
+@keyframes Glow {
+    from {
+        text-shadow: 0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 30px #fff,
+            0 0 40px #a882e0,
+            0 0 70px #a882e0,
+            0 0 80px #a882e0,
+            0 0 100px #a882e0,
+    }
+    to {
+        text-shadow: 0 0 5px rgb(127, 189, 227),
+            0 0 10px rgb(127, 189, 227),
+            0 0 15px rgb(127, 189, 227),
+            0 0 20px #a882e0,
+            0 0 35px #a882e0,
+            0 0 40px #a882e0,
+            0 0 50px #a882e0,
+            0 0 75px #a882e0;
+    }
+}
+
+
+
+#Setting-box{
+    position: absolute;
+    width: 500px;
+    height: 350px;
+    top: calc(50% - 175px);
+    left: calc(50% - 250px);
+    border-radius: 10px;
+    
+    background: #000000;
+    z-index:1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* flex-direction: column; */
+    /* opacity: 0.8; */
+    -webkit-transition: all 1s ease;
+    transition: all 1s ease;
+}
+
+/* 用box的伪元素添加一个面积比box略大的矩形,并通过改变层叠次序,置于box的下层,达到给box设置边框的效果 */
+#Setting-box::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: #fff;
+    border-radius: 10px;
+    z-index: -1;
+}
+
+/* 于上面类似,做一个面积比box略大的矩形,并通过改变层叠次序,置于box的下层,达到给box设置边框的效果 */
+#Setting-box::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: #fff;
+    z-index: -2;
+    /* 滤镜属性  给图像设置高斯模糊。"radius"一值设定高斯函数的标准差，或者是屏幕上以多少像素融在一起，所以值越大越模糊；如果没有设定值，则默认是0；这个参数可设置css长度值，但不接受百分比值。 */
+    filter: blur(30px);
+}
+
+#Setting-box::before,
+#Setting-box::after {
+    /* linear-gradient() 函数用于创建一个线性渐变的 "图像"。 参数1:用角度值指定渐变的方向（或角度）  12点钟方向为0deg*/
+    background: linear-gradient(235deg, #e458cd, #060c21, #00bcd4);
+}
+
+.MySettingBox{
+    position:absolute;
+    z-index: 10;
+    background-color: rgb(78, 79, 79);
+    border: 1px solid rgba(0,0,0,.2);
+    width: 500px;
+    height: 150px;
+    top: calc(50% - 175px);
+    left: calc(50% - 250px);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 1s;
+}
+
+.box{
+    border-radius: 1rem;
+}

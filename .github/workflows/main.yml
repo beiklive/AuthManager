@@ -8,20 +8,18 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-18.04, ubuntu-20.04]
+    runs-on: ubuntu-latest
 
     steps:
+      - name: Install gcc and g++
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc g++
+
       - name: Install xmake
-        id: install
-        shell: bash
         run: |
           wget https://xmake.io/shget.text -O - | bash
 
-      - name: Build ubuntu
-        id: build
-        shell: bash
+      - name: Build
         run: |
           xmake

@@ -1,0 +1,28 @@
+{
+    "rules": [
+        {
+            "name": "TEXT",
+            "syntax": {
+                "router": "string",
+                "handle_type": "string",
+                "text": "string"
+            }
+        },
+        {
+            "name": "HTML",
+            "syntax": {
+                "router": "string",
+                "handle_type": "string",
+                "path": "string"
+            }
+        },
+        {
+            "name": "PROGRAM",
+            "syntax": {
+                "router": "string",
+                "handle_type": "string",
+                "command": "string"
+            }
+        }
+    ]
+}

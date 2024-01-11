@@ -106,13 +106,13 @@ namespace beiklive
     {
 
 
-        // 获取当前路径    /xxxx/xxxx/dir
+        /// 获取当前路径    /xxxx/xxxx/dir
         t_string GetPwd()
         {
             std::filesystem::path currentPath = std::filesystem::current_path();
             return currentPath;
         }
-        // 获取文件内容
+        /// 获取文件内容
         t_string readFileToString(const t_string& filename) {
             // 打开文件
             std::ifstream file(filename);
@@ -133,7 +133,7 @@ namespace beiklive
             // 返回读取到的字符串
             return buffer.str();
         }
-        // 获取指定目录下所有文件名称
+        /// 获取指定目录下所有文件名称
         std::vector<t_string> listFilesInDirectory(const t_string& directoryPath) {
             std::vector<t_string> filenames;
 
@@ -143,7 +143,7 @@ namespace beiklive
 
             return filenames;
         }
-        // 目录不存在则创建
+        /// 目录不存在则创建
         bool createDirectoryIfNotExists(const t_string& directoryPath) {
             if (!std::filesystem::exists(directoryPath)) {
                 try {
@@ -642,7 +642,7 @@ namespace beiklive
                 }
                 else
                 {
-                    LOG_ERROR("[%s] Unable to open file: %s",__func__, _filename.c_str());
+                    LOG_DEBUG("[%s] Unable to open file: %s",__func__, _filename.c_str());
                     return false;
                 }
             }

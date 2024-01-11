@@ -9,7 +9,8 @@
 */
 using json = nlohmann::json;
 using ConfigList = std::vector<json>;
-enum {
+enum
+{
     FAILED,
     SUCCESS,
     ERROR
@@ -19,15 +20,19 @@ class AuthManager;
 class GrammarCheck;
 class RuleEngine;
 
-class RuleEngine {
+class RuleEngine
+{
 public:
     RuleEngine() = default;
 
-    bool loadRules() {
+    bool loadRules()
+    {
         ruleFileName = beiklive::TOOL::GetPwd() + "/../rules.json";
-        try {
+        try
+        {
             std::ifstream file(ruleFileName);
-            if (!file.is_open()) {
+            if (!file.is_open())
+            {
                 std::cerr << "Error opening file: " << ruleFileName << std::endl;
                 return false;
             }
@@ -36,32 +41,43 @@ public:
 
             file.close();
             return true;
-        } catch (const json::parse_error& e) {
+        }
+        catch (const json::parse_error &e)
+        {
             std::cerr << "Error parsing JSON file: " << e.what() << std::endl;
             return false;
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             std::cerr << "Exception: " << e.what() << std::endl;
             return false;
         }
     }
 
-    bool applyRule(const json& jsonData) const {
-        if (!ruleData.contains("rules") || !ruleData["rules"].is_array()) {
+    bool applyRule(const json &jsonData) const
+    {
+        if (!ruleData.contains("rules") || !ruleData["rules"].is_array())
+        {
             std::cerr << "Error: Missing or invalid rules in rule configuration." << std::endl;
             return false;
         }
 
-        for (const auto& rule : ruleData["rules"]) {
-            if (rule.contains("syntax") && rule["syntax"].is_object()) {
+        for (const auto &rule : ruleData["rules"])
+        {
+            if (rule.contains("syntax") && rule["syntax"].is_object())
+            {
                 bool match = true;
-                for (const auto& [key, expectedType] : rule["syntax"].items()) {
-                    if (!jsonData.contains(key) || !matchType(jsonData[key], expectedType)) {
+                for (const auto &[key, expectedType] : rule["syntax"].items())
+                {
+                    if (!jsonData.contains(key) || !matchType(jsonData[key], expectedType))
+                    {
                         match = false;
                         break;
                     }
                 }
 
-                if (match) {
+                if (match)
+                {
                     // std::cout << "Matched rule: " << rule["name"] << std::endl;
                     return true;
                 }
@@ -72,42 +88,54 @@ public:
         return false;
     }
 
-    std::vector<std::string> getRuleListByTypeStr(const std::string &typeName) const{
+    std::vector<std::string> getRuleListByTypeStr(const std::string &typeName) const
+    {
         std::vector<std::string> SyntaxList;
-        if (!ruleData.contains("rules") || !ruleData["rules"].is_array()) {
+        if (!ruleData.contains("rules") || !ruleData["rules"].is_array())
+        {
             std::cerr << "Error: Missing or invalid rules in rule configuration." << std::endl;
             return SyntaxList;
         }
 
         // find target type
         bool match = false;
-        for (const auto& rule : ruleData["rules"]) {
-            if (rule.contains("type") && rule["type"].is_string()) {
-                if(typeName == rule["type"])
+        for (const auto &rule : ruleData["rules"])
+        {
+            if (rule.contains("type") && rule["type"].is_string())
+            {
+                if (typeName == rule["type"])
                 {
-                    SyntaxList.emplace_back(rule["type"]);
-                    for (const auto& [key, expectedType] : rule["syntax"].items()) {
+                    LOG_DEBUG("[%s] type: %s", __func__, typeName.c_str());
+                    for (const auto &[key, expectedType] : rule["syntax"].items())
+                    {
+                        LOG_DEBUG("[%s] key: %s", __func__, key.c_str());
                         SyntaxList.emplace_back(key);
                     }
                     match = true;
                     break;
                 }
-
             }
         }
         return SyntaxList;
     }
 
-
 private:
-    bool matchType(const json& value, const std::string& expectedType) const {
-        if (expectedType == "string") {
+    bool matchType(const json &value, const std::string &expectedType) const
+    {
+        if (expectedType == "string")
+        {
             return value.is_string();
-        } else if (expectedType == "number") {
+        }
+        else if (expectedType == "number")
+        {
             return value.is_number();
-        } else if (expectedType == "boolean") {
+        }
+        else if (expectedType == "boolean")
+        {
             return value.is_boolean();
-        } else {
+        }
+        else
+        {
             std::cerr << "Unknown type in rule: " << expectedType << std::endl;
             return false;
         }
@@ -118,13 +146,14 @@ private:
     json ruleData;
 };
 
-
-class GrammarCheck{
+class GrammarCheck
+{
 private:
     RuleEngine ruleEngine;
     ConfigList _configList;
     std::string _syntaxErrorMessage{"NONE"};
     std::string _routerErrorMessage{"NONE"};
+
 public:
     GrammarCheck()
     {
@@ -133,7 +162,7 @@ public:
     ~GrammarCheck() = default;
 
     /// 添加需要 check 的内容
-    void configAdd(const json& jsonp)
+    void configAdd(const json &jsonp)
     {
         _configList.emplace_back(jsonp);
     }
@@ -144,18 +173,18 @@ public:
         _configList.clear();
     }
 
-    void syntaxErrorMessageAdd(const std::string& msg)
+    void syntaxErrorMessageAdd(const std::string &msg)
     {
-        if("NONE" == _syntaxErrorMessage)
+        if ("NONE" == _syntaxErrorMessage)
         {
             _syntaxErrorMessage = "Syntax error found!!! Please check the following configuration >>";
         }
         _syntaxErrorMessage += "\n";
         _syntaxErrorMessage += msg;
     }
-    void routerErrorMessageAdd(const std::string& msg)
+    void routerErrorMessageAdd(const std::string &msg)
     {
-        if("NONE" == _routerErrorMessage)
+        if ("NONE" == _routerErrorMessage)
         {
             _routerErrorMessage = "Repeat router found!!! Please check the following configuration>>";
         }
@@ -164,70 +193,76 @@ public:
     }
     int resultMessagePrint()
     {
-        if("NONE" != _syntaxErrorMessage)
+        if ("NONE" != _syntaxErrorMessage)
         {
             LOG_ERROR("%s", _syntaxErrorMessage.c_str());
             return ERROR;
         }
-        if("NONE" != _routerErrorMessage)
+        if ("NONE" != _routerErrorMessage)
         {
             LOG_ERROR("%s", _routerErrorMessage.c_str());
             return ERROR;
         }
-        
+
         LOG_INFO("Config Check Pass");
 
         return SUCCESS;
     }
 
-
-
-
-    std::vector<std::string> GetConfigByType(const std::string &typeName) const{
-        LOG_INFO("type: %s", typeName.c_str());
-        std::vector<std::string> ConfigHandlList;
+    // Get CurrentType's key string
+    std::vector<std::string> GetConfigByType(const std::string &typeName) const
+    {
+        std::vector<std::string> ConfigHandleList;
         auto ret = ruleEngine.getRuleListByTypeStr(typeName);
-        for(auto it : ret)
+        for (auto it : ret)
         {
-            LOG_INFO("%s", it.c_str());
+            ConfigHandleList.emplace_back(it);
         }
 
+        return ConfigHandleList;
     }
 
-    void applyConfigHandle(){
-        for(auto& jsonData : _configList)
+    std::unordered_map<json, std::vector<std::string>> collectConfigKeyPairs()
+    {
+        std::unordered_map<json, std::vector<std::string>> keyValuePairs;
+        for (auto &jsonData : _configList)
         {
-            GetConfigByType(jsonData["type"]);
+            LOG_DEBUG("[%s]\n%s", __func__, jsonData.dump(4).c_str());
+            keyValuePairs[jsonData] = GetConfigByType(jsonData["type"]);
         }
+        return keyValuePairs;
     }
 
     void StartCheck()
     {
-        if(_configList.empty())
+        if (_configList.empty())
         {
             LOG_INFO("[%s] empty config !!!", __func__);
             return;
         }
         bool checkflag = true;
         // 语法检查
-        for(auto& jsonData : _configList)
+        for (auto &jsonData : _configList)
         {
-            if(false == ruleEngine.applyRule(jsonData))
+            if (false == ruleEngine.applyRule(jsonData))
             {
                 syntaxErrorMessageAdd(jsonData.dump(4));
                 checkflag = false;
             }
         }
 
-        if(true == checkflag)
+        if (true == checkflag)
         {
             // 路由重复性检查
             std::unordered_set<std::string> uniqueNames;
 
-            for (const auto& jsonObj : _configList) {
-                if (jsonObj.contains("router") && jsonObj["router"].is_string()) {
+            for (const auto &jsonObj : _configList)
+            {
+                if (jsonObj.contains("router") && jsonObj["router"].is_string())
+                {
                     std::string nameValue = jsonObj["router"];
-                    if (!uniqueNames.insert(nameValue).second) {
+                    if (!uniqueNames.insert(nameValue).second)
+                    {
                         routerErrorMessageAdd(jsonObj.dump(4));
                     }
                 }
@@ -235,8 +270,6 @@ public:
         }
     }
 };
-
-
 
 class AppConfigManager
 {
@@ -257,17 +290,16 @@ public:
     }
     ~AppConfigManager() = default;
 
-    
     /// 检查目录下所有配置文件
     bool directoryCheck()
     {
         auto fileList = beiklive::TOOL::listFilesInDirectory(_configPath);
         for (const auto &fileName : fileList)
         {
-           if(FAILED == parseFile(_configPath + "/" + fileName))
-           {
+            if (FAILED == parseFile(_configPath + "/" + fileName))
+            {
                 return false;
-           }
+            }
         }
         return true;
     }
@@ -308,12 +340,14 @@ public:
     {
         _grammarCheck.StartCheck();
         int ret = _grammarCheck.resultMessagePrint();
-        _grammarCheck.applyConfigHandle();
         return ret;
     }
 
+    class std::unordered_map<json, std::vector<t_string>> getHandlePairs()
+    {
+        return _grammarCheck.collectConfigKeyPairs();
+    }
 };
-
 
 class AuthManager
 {
@@ -329,7 +363,7 @@ private:
     AppConfigManager configManager;
 
 public:
-    void ShowRequestInfo(const httplib::Request &request,const httplib::Response &resp)
+    void ShowRequestInfo(const httplib::Request &request, const httplib::Response &resp)
     {
         // 获取请求方的信息
         std::string clientIP = request.remote_addr;
@@ -340,7 +374,7 @@ public:
         LOG_DEBUG("%s:%d\t|\t%s %s", clientIP.c_str(), clientPort, method.c_str(), uri.c_str());
     }
 
-    void ShowResponseInfo(const httplib::Request &request,const httplib::Response &resp)
+    void ShowResponseInfo(const httplib::Request &request, const httplib::Response &resp)
     {
         // 获取请求方的信息
         std::string clientIP = request.remote_addr;
@@ -373,6 +407,7 @@ public:
     ManagerConfig->setConfig(cate, type, data); \
     LOG_INFO("Init %s\t>> %s\t: %s", cate, type, data.c_str());
 
+#undef GET_CONFIG_STR
 #define GET_CONFIG_STR(cate, type, data)                                      \
     std::string readData##data = ManagerConfig->getConfig(cate, type);        \
     if (readData##data != "")                                                 \
@@ -425,6 +460,41 @@ public:
 #undef GET_CONFIG_INT
 #undef SET_CONFIG_STR
 
+
+void addTextHandle(const json &jsonObject)
+{
+    std::string router = jsonObject["router"];
+    std::string txt = jsonObject["text"];
+    LOG_INFO("Handle Set: text | %s\t|  %s", router.c_str(), txt.c_str());
+    ManagerHttpServer.Get(router,
+        [=](const httplib::Request& req, httplib::Response &res) {
+            res.set_content(txt, "text/html");
+        });
+}
+
+void addHtmlHandle(const json &jsonObject)
+{
+    std::string router = jsonObject["router"];
+
+    ManagerHttpServer.Get(router,
+        [=](const httplib::Request& req, httplib::Response &res) {
+            res.set_content("Function Prepare to do ... ", "text/html");
+        });
+}
+
+void addProgramHandle(const json &jsonObject)
+{
+    std::string router = jsonObject["router"];
+    std::string cmd = jsonObject["command"];
+
+    ManagerHttpServer.Get(router,
+        [=](const httplib::Request& req, httplib::Response &res) {
+            res.set_content("Executing : "+ cmd, "text/html");
+            auto ret = beiklive::TOOL::executeCommand(cmd);
+            res.set_content(ret, "text/html");
+        });
+}
+
     // 处理http请求
     void httpHandle()
     {
@@ -433,30 +503,12 @@ public:
 
         // request 处理后调用
         ManagerHttpServer.set_logger([&](const httplib::Request &req, const httplib::Response &resp)
-                                     {
-                                         ShowResponseInfo(req, resp);
-                                         
-                                     });
-
+                                     { ShowResponseInfo(req, resp); });
         // 收到请求后的预处理
         ManagerHttpServer.set_pre_routing_handler([&](const auto &req, auto &resp)
-                                                  {
-            // ShowRequestInfo(req, resp);
-
-            // if (req.path == "/hello") {
-            //     res.set_content("world", "text/html");
-            //     return httplib::Server::HandlerResponse::Handled;
-            // }
-            return httplib::Server::HandlerResponse::Unhandled; });
-
-        // // Test Handle
-        // ManagerHttpServer.Get("/hi", [&](const httplib::Request &request, httplib::Response &res)
-        //                       { res.set_content("Hello World!", "text/plain"); });
-        // // Stop Request
-        // ManagerHttpServer.Get("/stop",
-        //                       [&](const httplib::Request & /*req*/, httplib::Response &res)
-        //                       { res.set_content("See you Next time!", "text/plain");
-        //                         ManagerHttpServer.stop(); });
+                                                  { 
+                                                    ShowRequestInfo(req, resp);
+                                                    return httplib::Server::HandlerResponse::Unhandled; });
 
         ManagerHttpServer.set_error_handler([](const auto &req, auto &res)
                                             {
@@ -464,6 +516,30 @@ public:
             char buf[BUFSIZ];
             snprintf(buf, sizeof(buf), fmt, res.status);
             res.set_content(buf, "text/html"); });
+
+
+        //  expand config handle >>>>>>>>>>>>>
+        auto jsonMap = configManager.getHandlePairs();
+        for (const auto &pair : jsonMap)
+        {
+            const json &jsonObject = pair.first;
+            const std::vector<std::string> &keys = pair.second;
+
+            if(jsonObject["type"].is_string())
+            {
+                if("text" == jsonObject["type"])
+                {
+                    addTextHandle(jsonObject);
+                }else if("html" == jsonObject["type"])
+                {
+                    addHtmlHandle(jsonObject);
+                }else if("program" == jsonObject["type"])
+                {
+                    addProgramHandle(jsonObject);
+                }
+            }
+        }
+        //  end of config handle <<<<<<<<<<<<<
     }
 
     void ServerStart()
@@ -472,16 +548,19 @@ public:
         ManagerHttpServer.listen(_Server_Address, _Server_Port);
     }
 
-    void run(){
+    void run()
+    {
         LOG_INFO("Init >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         ConfigInit();
         configManager.directoryCheck();
-        if(SUCCESS == configManager.grammarAnalysis())
+        if (SUCCESS == configManager.grammarAnalysis())
         {
             httpHandle();
             LOG_INFO("Done <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             ServerStart();
-        }else{
+        }
+        else
+        {
             LOG_ERROR("FAIL <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         }
     }
@@ -492,10 +571,8 @@ int main(int argc, char **argv)
     beiklive::Logger::setLogLevel(beiklive::Logger::CommandLine::parseLogLevel(argc, argv));
     beiklive::Logger::initializeLogger(true);
 
-
     AuthManager ServerManger;
     ServerManger.run();
-
 
     return 0;
 }

@@ -13,6 +13,9 @@
 #include <functional>
 #include <vector>
 #include <filesystem>
+#include <cstdio>
+#include <stdexcept>
+#include <array>
 
 using t_string  = std::string;
 
@@ -155,6 +158,35 @@ namespace beiklive
             }
             return true;  // Directory already exists
         }
+
+        std::string executeCommand(const std::string& command) {
+            // 打开进程管道
+            FILE* pipe = popen(command.c_str(), "r");
+            if (!pipe) {
+                throw std::runtime_error("popen() failed!");
+            }
+
+            // 读取命令执行结果
+            std::array<char, 128> buffer;
+            std::string result;
+
+            while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+                result += buffer.data();
+            }
+
+            // 关闭管道
+            int status = pclose(pipe);
+
+            // 检查命令执行结果
+            if (status != 0) {
+                throw std::runtime_error("Command execution failed!");
+            }
+
+            return result;
+        }
+
+
+
     }
 
 

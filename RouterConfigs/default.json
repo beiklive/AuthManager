@@ -10,5 +10,23 @@
         "type" : "html",
         "path" : "../res/404",
         "discription" : "show 404 page"
+    },
+    "dj" : {
+        "router" : "/dj",
+        "type" : "text",
+        "text" : "why ????",
+        "discription" : "show 404 page"
+    },
+    "ls" : {
+        "router" : "/ls",
+        "type" : "program",
+        "command" : "ls -al",
+        "discription" : "show 404 page"
+    },
+    "pwd" : {
+        "router" : "/pwd",
+        "type" : "program",
+        "command" : "pwd",
+        "discription" : "show 404 page"
     }
 }

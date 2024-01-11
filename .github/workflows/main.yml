@@ -20,6 +20,12 @@ jobs:
         run: |
           wget https://xmake.io/shget.text -O - | bash
 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+          fetch-depth: 1
+          
       - name: Build
         run: |
           pwd

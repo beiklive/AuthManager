@@ -1,8 +1,10 @@
 name: Ubuntu Compile Check CI
+
 on:
   push:
     branches:
-    - main
+      - main
+
 jobs:
   build:
     name: Build
@@ -10,14 +12,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
+
     steps:
-    - name: Install xmake
-      id: install
-      shell: bash
-      run: |
-      wget https://xmake.io/shget.text -O - | bash
-    - name: Build
-      id: build
-      shell: bash
-      run: |
-      xmake
+      - name: Install xmake
+        id: install
+        shell: bash
+        run: |
+          wget https://xmake.io/shget.text -O - | bash
+
+      - name: Build ubuntu
+        id: build
+        shell: bash
+        run: |
+          xmake

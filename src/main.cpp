@@ -72,6 +72,33 @@ public:
         return false;
     }
 
+    std::vector<std::string> getRuleListByTypeStr(const std::string &typeName) const{
+        std::vector<std::string> SyntaxList;
+        if (!ruleData.contains("rules") || !ruleData["rules"].is_array()) {
+            std::cerr << "Error: Missing or invalid rules in rule configuration." << std::endl;
+            return SyntaxList;
+        }
+
+        // find target type
+        bool match = false;
+        for (const auto& rule : ruleData["rules"]) {
+            if (rule.contains("type") && rule["type"].is_string()) {
+                if(typeName == rule["type"])
+                {
+                    SyntaxList.emplace_back(rule["type"]);
+                    for (const auto& [key, expectedType] : rule["syntax"].items()) {
+                        SyntaxList.emplace_back(key);
+                    }
+                    match = true;
+                    break;
+                }
+
+            }
+        }
+        return SyntaxList;
+    }
+
+
 private:
     bool matchType(const json& value, const std::string& expectedType) const {
         if (expectedType == "string") {
@@ -149,7 +176,29 @@ public:
         }
         
         LOG_INFO("Config Check Pass");
+
         return SUCCESS;
+    }
+
+
+
+
+    std::vector<std::string> GetConfigByType(const std::string &typeName) const{
+        LOG_INFO("type: %s", typeName.c_str());
+        std::vector<std::string> ConfigHandlList;
+        auto ret = ruleEngine.getRuleListByTypeStr(typeName);
+        for(auto it : ret)
+        {
+            LOG_INFO("%s", it.c_str());
+        }
+
+    }
+
+    void applyConfigHandle(){
+        for(auto& jsonData : _configList)
+        {
+            GetConfigByType(jsonData["type"]);
+        }
     }
 
     void StartCheck()
@@ -259,6 +308,7 @@ public:
     {
         _grammarCheck.StartCheck();
         int ret = _grammarCheck.resultMessagePrint();
+        _grammarCheck.applyConfigHandle();
         return ret;
     }
 

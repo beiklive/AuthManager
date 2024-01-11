@@ -1,13 +1,13 @@
 {
     "default" : {
         "router" : "/hello",
-        "handle_type" : "TEXT",
+        "type" : "text",
         "text" : "hello world",
         "discription" : "show text 'hello world'"
     },
     "404" : {
         "router" : "/404",
-        "handle_type" : "HTML",
+        "type" : "html",
         "path" : "../res/404",
         "discription" : "show 404 page"
     }

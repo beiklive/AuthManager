@@ -2,25 +2,28 @@
     "rules": [
         {
             "name": "TEXT",
+            "type":"text",
             "syntax": {
                 "router": "string",
-                "handle_type": "string",
+                "type": "string",
                 "text": "string"
             }
         },
         {
             "name": "HTML",
+            "type":"html",
             "syntax": {
                 "router": "string",
-                "handle_type": "string",
+                "type": "string",
                 "path": "string"
             }
         },
         {
             "name": "PROGRAM",
+            "type":"program",
             "syntax": {
                 "router": "string",
-                "handle_type": "string",
+                "type": "string",
                 "command": "string"
             }
         }

@@ -22,4 +22,6 @@ jobs:
 
       - name: Build
         run: |
+          pwd
+          ls -al
           xmake

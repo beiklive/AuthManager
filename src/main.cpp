@@ -171,6 +171,8 @@ public:
     void configClean()
     {
         _configList.clear();
+        _syntaxErrorMessage = "NONE";
+        _routerErrorMessage = "NONE";
     }
 
     void syntaxErrorMessageAdd(const std::string &msg)
@@ -343,9 +345,13 @@ public:
         return ret;
     }
 
-    class std::unordered_map<json, std::vector<t_string>> getHandlePairs()
+    std::unordered_map<json, std::vector<t_string>> getHandlePairs()
     {
         return _grammarCheck.collectConfigKeyPairs();
+    }
+
+    void configClear(){
+        _grammarCheck.configClean();
     }
 };
 
@@ -547,6 +553,10 @@ void addProgramHandle(const json &jsonObject)
         LOG_INFO("Start Listen >>  %s:%d", _Server_Address.c_str(), _Server_Port);
         ManagerHttpServer.listen(_Server_Address, _Server_Port);
     }
+
+
+
+
 
     void run()
     {

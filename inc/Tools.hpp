@@ -2,23 +2,24 @@
 #define __TOOLS__BK
 
 #include <iostream>
-#include <cmath>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <mutex>
-#include <cstdarg>
-#include <chrono>
 #include <unordered_map>
 #include <functional>
 #include <vector>
 #include <filesystem>
-#include <cstdio>
 #include <stdexcept>
 #include <array>
 
-using t_string  = std::string;
-
+#include <cmath>
+#include <cstdarg>
+#include <chrono>
+#include <cstdio>
+#include <ctime>
+using t_string = std::string;
+namespace fs = std::filesystem;
 /*********** Class Usage **********
 >>>>>>>>>>>>>>>>>>>>  Logger
 
@@ -108,7 +109,6 @@ namespace beiklive
     namespace TOOL
     {
 
-
         /// 获取当前路径    /xxxx/xxxx/dir
         t_string GetPwd()
         {
@@ -116,12 +116,14 @@ namespace beiklive
             return currentPath;
         }
         /// 获取文件内容
-        t_string readFileToString(const t_string& filename) {
+        t_string readFileToString(const t_string &filename)
+        {
             // 打开文件
             std::ifstream file(filename);
-            
+
             // 检查文件是否成功打开
-            if (!file.is_open()) {
+            if (!file.is_open())
+            {
                 std::cerr << "Error opening file: " << filename << std::endl;
                 return "";
             }
@@ -137,32 +139,42 @@ namespace beiklive
             return buffer.str();
         }
         /// 获取指定目录下所有文件名称
-        std::vector<t_string> listFilesInDirectory(const t_string& directoryPath) {
+        std::vector<t_string> listFilesInDirectory(const t_string &directoryPath)
+        {
             std::vector<t_string> filenames;
 
-            for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+            for (const auto &entry : std::filesystem::directory_iterator(directoryPath))
+            {
                 filenames.push_back(entry.path().filename().string());
             }
 
             return filenames;
         }
         /// 目录不存在则创建
-        bool createDirectoryIfNotExists(const t_string& directoryPath) {
-            if (!std::filesystem::exists(directoryPath)) {
-                try {
+        bool createDirectoryIfNotExists(const t_string &directoryPath)
+        {
+            if (!std::filesystem::exists(directoryPath))
+            {
+                try
+                {
                     std::filesystem::create_directory(directoryPath);
                     return true;
-                } catch (const std::exception& e) {
+                }
+                catch (const std::exception &e)
+                {
                     return false;
                 }
             }
-            return true;  // Directory already exists
+            return true; // Directory already exists
         }
 
-        std::string executeCommand(const std::string& command) {
+        // 执行系统命令
+        std::string executeCommand(const std::string &command)
+        {
             // 打开进程管道
-            FILE* pipe = popen(command.c_str(), "r");
-            if (!pipe) {
+            FILE *pipe = popen(command.c_str(), "r");
+            if (!pipe)
+            {
                 throw std::runtime_error("popen() failed!");
             }
 
@@ -170,7 +182,8 @@ namespace beiklive
             std::array<char, 128> buffer;
             std::string result;
 
-            while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+            while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
+            {
                 result += buffer.data();
             }
 
@@ -178,18 +191,43 @@ namespace beiklive
             int status = pclose(pipe);
 
             // 检查命令执行结果
-            if (status != 0) {
+            if (status != 0)
+            {
                 throw std::runtime_error("Command execution failed!");
             }
 
             return result;
         }
+        bool isFileModified(const fs::path &filePath, const fs::file_time_type &lastCheckTime)
+        {
+            try
+            {
+                auto lastWriteTime = fs::last_write_time(filePath);
+                return lastWriteTime > lastCheckTime;
+            }
+            catch (const std::exception &e)
+            {
+                // Handle exception (file not found, permissions issue, etc.)
+                std::cerr << "Error: " << e.what() << std::endl;
+                return false;
+            }
+        }
 
-
+        void checkDirectory(const fs::path &directoryPath, const fs::file_time_type &lastCheckTime)
+        {
+            for (const auto &entry : fs::recursive_directory_iterator(directoryPath))
+            {
+                if (fs::is_regular_file(entry))
+                {
+                    if (isFileModified(entry.path(), lastCheckTime))
+                    {
+                        std::cout << entry.path().string() << " has been modified!" << std::endl;
+                    }
+                }
+            }
+        }
 
     }
-
-
 
     namespace Logger
     {
@@ -546,7 +584,7 @@ namespace beiklive
         private:
             std::unordered_map<t_string, std::unordered_map<t_string, t_string>> configMap;
             t_string _filename;
-        
+
         public:
             Config() = default;
             Config(const t_string &filename)
@@ -606,7 +644,7 @@ namespace beiklive
                 {
                     for (const auto &pair : categoryIt->second)
                     {
-                        LOG_DEBUG("[%s] %s : %s", __func__ ,pair.first.c_str(), pair.second.c_str());
+                        LOG_DEBUG("[%s] %s : %s", __func__, pair.first.c_str(), pair.second.c_str());
                     }
                 }
             }
@@ -663,7 +701,7 @@ namespace beiklive
                                 t_string key = line.substr(0, delimiterPos);
                                 t_string value = line.substr(delimiterPos + 1);
                                 configMap[currentCategory][key] = value;
-                                LOG_DEBUG("[%s] load %s::%s : %s", __func__, currentCategory.c_str(), key.c_str(),value.c_str());
+                                LOG_DEBUG("[%s] load %s::%s : %s", __func__, currentCategory.c_str(), key.c_str(), value.c_str());
                             }
                         }
                     }
@@ -674,7 +712,7 @@ namespace beiklive
                 }
                 else
                 {
-                    LOG_DEBUG("[%s] Unable to open file: %s",__func__, _filename.c_str());
+                    LOG_DEBUG("[%s] Unable to open file: %s", __func__, _filename.c_str());
                     return false;
                 }
             }

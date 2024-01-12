@@ -5,28 +5,16 @@
         "text" : "hello world",
         "discription" : "show text 'hello world'"
     },
-    "404" : {
-        "router" : "/404",
+    "hello" : {
+        "router" : "/hello",
         "type" : "html",
-        "path" : "../res/404",
-        "discription" : "show 404 page"
-    },
-    "dj" : {
-        "router" : "/dj",
-        "type" : "text",
-        "text" : "why ????",
-        "discription" : "show 404 page"
+        "path" : "/opt/www/hello.html",
+        "discription" : "show hello page"
     },
     "ls" : {
         "router" : "/ls",
         "type" : "program",
         "command" : "ls -al",
-        "discription" : "show 404 page"
-    },
-    "pwd" : {
-        "router" : "/pwd",
-        "type" : "program",
-        "command" : "pwd",
-        "discription" : "show 404 page"
+        "discription" : "show command result"
     }
 }

@@ -6,9 +6,9 @@
         "discription" : "show text 'hello world'"
     },
     "hello" : {
-        "router" : "/hello",
+        "router" : "/",
         "type" : "html",
-        "path" : "/opt/www/hello.html",
+        "path" : "/home/byeaxj/WorkSpace/MyCode/AuthManager/asserts/",
         "discription" : "show hello page"
     },
     "ls" : {

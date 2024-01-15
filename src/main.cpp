@@ -395,7 +395,7 @@ public:
     AuthManager()
     {
         ManagerConfig = new beiklive::CONFIG::Config(configName);
-        _ServerResPath = beiklive::TOOL::GetPwd() + "/../res";
+        _ServerResPath = beiklive::TOOL::GetPwd() + "/../asserts";
 
         // 创建 log 和 config 目录
         if (beiklive::TOOL::createDirectoryIfNotExists("log") && beiklive::TOOL::createDirectoryIfNotExists("config"))
@@ -471,7 +471,7 @@ void addTextHandle(const json &jsonObject)
 {
     std::string router = jsonObject["router"];
     std::string txt = jsonObject["text"];
-    LOG_INFO("Handle Set: text | %s\t|  %s", router.c_str(), txt.c_str());
+    LOG_INFO("Handle Set: text | %s\t\t|  %s", router.c_str(), txt.c_str());
     ManagerHttpServer.Get(router,
         [=](const httplib::Request& req, httplib::Response &res) {
             res.set_content(txt, "text/html");
@@ -481,17 +481,19 @@ void addTextHandle(const json &jsonObject)
 void addHtmlHandle(const json &jsonObject)
 {
     std::string router = jsonObject["router"];
-
-    ManagerHttpServer.Get(router,
-        [=](const httplib::Request& req, httplib::Response &res) {
-            res.set_content("Function Prepare to do ... ", "text/html");
-        });
+    std::string path = jsonObject["path"];
+    LOG_INFO("Handle Set: html | %s\t\t|  %s", router.c_str(), path.c_str());
+    auto ret = ManagerHttpServer.set_mount_point(router, path);
+    if (!ret) {
+    // The specified base directory doesn't exist...
+    }
 }
 
 void addProgramHandle(const json &jsonObject)
 {
     std::string router = jsonObject["router"];
     std::string cmd = jsonObject["command"];
+    LOG_INFO("Handle Set: cmd | %s\t\t|  %s", router.c_str(), cmd.c_str());
 
     ManagerHttpServer.Get(router,
         [=](const httplib::Request& req, httplib::Response &res) {
@@ -522,6 +524,20 @@ void addProgramHandle(const json &jsonObject)
             char buf[BUFSIZ];
             snprintf(buf, sizeof(buf), fmt, res.status);
             res.set_content(buf, "text/html"); });
+
+        ManagerHttpServer.Get("/bash",
+        [=](const httplib::Request& req, httplib::Response &res){
+            if (req.has_param("cmd")) {
+                auto cmd = req.get_param_value("cmd");
+                auto ret = beiklive::TOOL::executeCommand(cmd);
+                res.set_content(ret, "text/plain;charset=utf-8");
+            }else{
+                res.set_content("Usage: /bash?cmd=xxxx", "text/plain;charset=utf-8");
+            }
+        }
+
+        );
+
 
 
         //  expand config handle >>>>>>>>>>>>>
